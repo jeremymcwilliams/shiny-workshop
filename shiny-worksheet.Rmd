@@ -144,7 +144,7 @@ Hint: you'll need to convert the input from string to numeric before multiplying
 
 ### Working with a dataset
 
-The dplyr dataset "population" shows population data by country from 1995-2013:  
+The dplyr dataset "population" shows population data by country from 1995-2017:  
 
 ```{r}
 population
