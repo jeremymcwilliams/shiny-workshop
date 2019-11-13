@@ -182,11 +182,36 @@ ui <- fluidPage(
 
 server <- function(input, output) {
     output$myPlot <- renderPlot({   # use "renderPlot" when the output is a plot!
-      ggplot(data=filter(.data=population, country==input$myCountry), mapping=aes(x=year, y=population))+geom_line()
+      ggplot(data=filter(.data=population, country==input$myCountry), mapping=aes(x=year, y=population))+geom_line()+labs(title=paste("population of",input$myCountry, "1995-2017"))
     })
 }
 
 shinyApp(ui = ui, server = server) # this launches your app
+
+
+```
+
+
+YOUR TURN:
+Create a Shiny app that has the following:
+* uses the babyNames data set
+* user selects the year from a select menu 
+* output is a bar chart showing the five most popular names
+
+Bonus: Can you add a second user input that lets the user choose Boys or Girls?
+
+Hints:
+This loads the babyNames dataset:
+babyNames<-read_csv("babyNames.csv");
+
+This yields the top 5 for a given Year and Sex:
+top5<-filter(.data=babyNames, Year=="1975" & Sex=="Girls") %>% arrange(desc(Count)) %>% head(5)
+
+This plots a bar chart from the top5 data:
+ggplot(data=top5, mapping=aes(x=Name, y=Count))+geom_bar(stat="identity")+labs(title="Most popular baby names - 1975")
+
+
+```{r}
 
 
 ```
