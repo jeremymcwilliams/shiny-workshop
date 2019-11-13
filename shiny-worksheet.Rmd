@@ -8,19 +8,21 @@ output:
 ---
 
 
-## What is Shiny?
+### What is Shiny?
 
 Shiny is an R package that makes it easy to build interactive web applications (apps) straight from R.
 
 Let's look at some Shiny examples:
-<br>
-<a href="https://shiny.rstudio.com/gallery/telephones-by-region.html" target="_blank">Telephones by region</a>
-<br>
-<a href="https://shiny.rstudio.com/gallery/single-file-shiny-app.html" target="_blank">Random histogram</a>
-<br>
-<a href="https://shiny.rstudio.com/gallery/lego-set.html" target="_blank">Lego Set Database</a>
 
-## Let's look under the hood of a Shiny App
+Alcohol Consumption by Country: https://viz.datasci.watzek.cloud/alcohol/
+
+Lego Set Database: https://shiny.rstudio.com/gallery/lego-set.html
+
+Bookie Clicker (by Gabe): https://viz.datasci.watzek.cloud/bookieclicker/
+
+
+### Loading the Shiny package
+
 Before doing anything, we need to load the Shiny library (click the play button to run the code). We're also going to use the tidyverse for plotting & data filtering.
 ```{r}
 library(shiny)
@@ -28,15 +30,18 @@ library(tidyverse)
 ```
 
 
+### Shiny App Structure
+
 A Shiny app has three main components:
 * a user interface (ui) object - contains everything you see
 * a server function - handles user input, sends output to ui
 * a call to the shinyApp function
 
-### Layout
-
 Below is the code for a super basic Shiny app. It doesn't really do anything, but includes some functions or how the user interface is presented:
 ```{r}
+
+####### The UI ##########
+
 ui <- fluidPage(
     titlePanel("Title of my Shiny App"),
     sidebarLayout(
@@ -44,14 +49,16 @@ ui <- fluidPage(
       mainPanel("My outputs will go here")
     )
   
-  ) # the user interface
+  ) 
+
+####### The Server ###########
 
 server <- function(input, output) {
-  
             #will receive the input, do things with it, and send back to ui 
             # but currently does nothing
-  
-          } #the server
+          }
+
+###### call to shinyApp function ########
 
 shinyApp(ui = ui, server = server) # this launches your app
 ```
@@ -59,7 +66,7 @@ shinyApp(ui = ui, server = server) # this launches your app
 The ui object contains some pretty specific layout functions (fluidpage, titlePanel, sidebarLayout, sidebarPanel, mainPanel). These are just a few Shiny functions, with many more described in the documentation: https://shiny.rstudio.com/reference/shiny/1.3.2/
 
 YOUR TURN:
-Below, create a shiny app with  ui, server, and shinyApp components. Label the parts different from above.
+Below, create a shiny app with  ui, server, and shinyApp components. Add your own custom text to the UI.
 ```{r}
 
 
@@ -77,20 +84,20 @@ ui <- fluidPage(
     titlePanel("Title of my Shiny App"),
     sidebarLayout(
       sidebarPanel(
-        selectInput("mySelectID", "Make a choice!", 
-                choices = list("One" = 1, "Two" = 2, "Three" = 3), selected = 1) 
+        selectInput(inputId= "mySelectID", "Make a choice!", 
+                choices = list("One" = 1, "Two" = 2, "Three" = 3)) 
         ),
       mainPanel("My outputs will go here")
     )
   
-  ) # the user interface
+  ) 
 
 server <- function(input, output) {
             #will receive the input, do things with it, and send back to ui 
             # but currently does nothing
           }
 
-shinyApp(ui = ui, server = server) # this launches your app
+shinyApp(ui = ui, server = server) 
 
 
 ```
@@ -102,31 +109,33 @@ ui <- fluidPage(
     titlePanel("Title of my Shiny App"),
     sidebarLayout(
       sidebarPanel(
-        selectInput("mySelectID", "Make a choice!", 
-                choices = list("One" = 1, "Two" = 2, "Three" = 3), selected = 1) 
+        selectInput(inputId="mySelectID", "Make a choice!", 
+                choices = list("One" = 1, "Two" = 2, "Three" = 3)) 
         ),
       mainPanel(
-        textOutput("theOutput")  #matches the output ID in line 117
+        textOutput(outputId="theOutput")  #matches the output$theOutput below 
         )
     )
-  ) # the user interface
+  ) 
 
 server <- function(input, output) {
     output$theOutput <- renderText({   # use "renderText" when the output is text!
       # add any R code as needed in here
-      theNumber<-input$mySelectID  # matches the select ID on line 105
+      
+      theNumber<-input$mySelectID  # matches the inputId in the selectInput function
       paste("You have selected", theNumber) # "paste" concatenates strings  
   })
           }
 
-shinyApp(ui = ui, server = server) # this launches your app
+shinyApp(ui = ui, server = server) 
 
 
 ```
 
 YOUR TURN:
 Create a Shiny app with a Select menu containing the values 10,20,30,40, and 50. In the server function, multiply the selected value by 5, and make the output read "<number selected> times 5 is <product>".
-Hint: you'll need to convert the input from string to numeric before multiplying, using the as.numeric function (e.g. num<-as.numeric("5"))
+
+Hint: you'll need to convert the input from string to numeric before multiplying, using the as.numeric function (e.g. num<-as.numeric(input$mySelectID))
 
 ```{r}
 
@@ -154,14 +163,15 @@ Let's say we want to build a Shiny app in which we let the user select the count
 ```{r}
 countries<-unique(population$country)
 
-#this maps 
+#this creates a "list" that can be used in a select input:
+# list("Afghanistan" = "Afghanistan", "Albania" = "Albania") etc.
 names(countries)<-countries
 
 countries
 
 ```
 
-
+Now we can create the Shiny app. First we'll get our list ready for the select menu. Then we can add the ggplot function in the "renderPlot" function in the server, while substituting the input value from "myCountry" in the ggplot data filter and title:
 
 
 ```{r}
@@ -172,22 +182,23 @@ ui <- fluidPage(
     titlePanel("Population over time by country"),
     sidebarLayout(
       sidebarPanel(
-        selectInput("myCountry", "Select a country", choices = countries) 
+        selectInput(inputId="myCountry", "Select a country", choices = countries) 
         ),
       mainPanel(
-        plotOutput("myPlot")  #matches the output ID in line 181
+        plotOutput(outputId="myPlot")  #matches output$myPlot below
         )
     )
   ) # the user interface
 
 server <- function(input, output) {
     output$myPlot <- renderPlot({   # use "renderPlot" when the output is a plot!
+      
       ggplot(data=filter(.data=population, country==input$myCountry), mapping=aes(x=year, y=population))+geom_line()+labs(title=paste("population of",input$myCountry, "1995-2017"))
+      
     })
 }
 
-shinyApp(ui = ui, server = server) # this launches your app
-
+shinyApp(ui = ui, server = server) 
 
 ```
 
@@ -215,6 +226,13 @@ ggplot(data=top5, mapping=aes(x=Name, y=Count))+geom_bar(stat="identity")+labs(t
 
 
 ```
+
+
+### Parting thoughts
+
+* We have a shiny server where you can deploy your shiny apps  
+* Want to kick around an idea for a shiny app? Talk to us (digitalinitiatives@lclark.edu)
+* Thank you!
 
 
 
